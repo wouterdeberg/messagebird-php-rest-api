@@ -12,11 +12,17 @@ use stdClass;
 class Contact extends Base
 {
     /**
-     * The phone number of contact.
+     * An unique random ID which is created on the MessageBird
+     * platform and is returned upon creation of the object.
      *
-     * @var int
+     * @var string
      */
-    public $msisdn;
+    protected $id;
+    /**
+     * A display name (e.g. "{firstName} {lastName}", a username, or phone number) for the contact, typically used when displaying a contact in UI.
+     * @var string
+     */
+    public $displayName;
     /**
      * The first name of the contact.
      *
@@ -30,68 +36,71 @@ class Contact extends Base
      */
     public $lastName;
     /**
+     * Optional. An array of language identifiers. Will be populated with ISO 639-1 codes for the language of this contact if the contact has messaged on a platform that provides locale data.
+     *
+     * @var array
+     */
+    public $languages;  
+    /**
+     * Optional. An identifier the country this contact resides in. Will be populated with an ISO 3166-1 code if the contact has messaged on a platform that provides country data.
      * @var string
      */
-    public $custom1;
+    public $country;
     /**
-     * @var string
-     */
-    public $custom2;
-    /**
-     * @var string
-     */
-    public $custom3;
-    /**
-     * @var string
-     */
-    public $custom4;
-    /**
-     * An unique random ID which is created on the MessageBird
-     * platform and is returned upon creation of the object.
+     * Optional. A URL linking to an avatar for this contact.
      *
      * @var string
      */
-    protected $id;
+    public $avatar;
     /**
-     * The URL of the created object.
+     * Optional. A gender identifier for the customer. Free text format.
      *
      * @var string
      */
-    protected $href;
+    public $gender;
     /**
-     * Custom fields of the contact.
-     *
-     * @var stdClass
-     */
-    protected $customDetails = [];
-    /**
-     * The hash of the group this contact belongs to.
-     *
-     * @var ?stdClass
-     */
-    protected $groups = null;
-
-    /**
-     * The hash with messages sent to contact.
-     *
-     * @var ?stdClass
-     */
-    protected $messages = null;
-
-    /**
-     * The date and time of the creation of the contact in RFC3339 format (Y-m-d\TH:i:sP)
+     * The status of this contact, one of: active, merged.
      *
      * @var string
      */
-    protected $createdDatetime;
-
+    public $status;
     /**
-     * The date and time of the updated of the contact in RFC3339 format (Y-m-d\TH:i:sP)
+     * Optional. An array of the profiles that link this Contact to a specific channel.
      *
-     * @var string|null
+     * @var array
      */
-    protected $updatedDatetime;
-
+    public $profiles;
+    /**
+     * Optional. Custom key-value attributes that can be assigned to the contact. Any valid JSON object is accepted, but the maximum size of the object is 10kB.
+     *
+     * @var json
+     */
+    public $attributes;
+    /**
+     * The URL for this contact resource.
+     *
+     * @var string
+     */
+    public $href;
+    /**
+     * RFC3339 formatted timestamp of the creation time of the contact.
+     *
+     * @var date
+     */
+    public $createdAt;
+    /**
+     * RFC3339 formatted timestamp of the time of the last update made to the contact.
+     *
+     * @var string
+     */
+    public $updatedAt;
+    /**
+     * An Identifier is a value used by other platforms to Identify a contact.
+     * This can be a generic identifier such as a phone number or email address that are used with multiple platforms,
+     * as well as some platform specific identifiers such as your Facebook ID.
+     */
+    public $identifiers;
+   
     public function getId(): string
     {
         return $this->id;
@@ -100,11 +109,6 @@ class Contact extends Base
     public function getHref(): string
     {
         return $this->href;
-    }
-
-    public function getGroups(): stdClass
-    {
-        return $this->groups;
     }
 
     public function getMessages(): stdClass
@@ -122,64 +126,8 @@ class Contact extends Base
         return $this->updatedDatetime;
     }
 
-    public function getCustomDetails(): stdClass
-    {
-        return $this->customDetails;
-    }
-
-    /**
-     * @deprecated 2.2.0 No longer used by internal code, please switch to {@see self::loadFromStdclass()}
-     * 
-     * @param mixed $object
-     */
-    public function loadFromArray($object): self
-    {
-        unset($this->custom1, $this->custom2, $this->custom3, $this->custom4);
-        
-        return parent::loadFromArray($object);
-    }
-
     public function loadFromStdclass(stdClass $object): self
     {
-        unset($this->custom1, $this->custom2, $this->custom3, $this->custom4);
-        
         return parent::loadFromStdclass($object);
-    }
-
-    /**
-     * @deprecated 2.2.0 No longer used by internal code, please switch to {@see self::loadFromStdclassForGroups()}
-     * 
-     * @param mixed $object
-     *
-     * @return $this ->object
-     */
-    public function loadFromArrayForGroups($object)
-    {
-        parent::loadFromArray($object);
-
-        if (!empty($object->items)) {
-            foreach ($object->items as &$item) {
-                $group = new Group();
-                $group->loadFromArray($item);
-
-                $item = $group;
-            }
-        }
-        return $object;
-    }
-
-    public function loadFromStdclassForGroups(stdClass $object)
-    {
-        parent::loadFromStdclass($object);
-
-        if (!empty($object->items)) {
-            foreach ($object->items as &$item) {
-                $group = new Group();
-                $group->loadFromStdclass($item);
-
-                $item = $group;
-            }
-        }
-        return $object;
     }
 }

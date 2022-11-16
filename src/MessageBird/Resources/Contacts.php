@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use MessageBird\Common;
 use MessageBird\Exceptions;
 use MessageBird\Objects;
+use MessageBird\Objects\Contact\Identifier;
 use MessageBird\Resources\Messages;
 
 /**
@@ -22,12 +23,12 @@ class Contacts extends Base
 
     public function __construct(Common\HttpClient $httpClient)
     {
+        parent::__construct($httpClient);
+
         $this->object = new Objects\Contact();
         $this->setResourceName('contacts');
 
         $this->messagesObject = new Messages($httpClient);
-
-        parent::__construct($httpClient);
     }
 
     /**
@@ -62,6 +63,39 @@ class Contacts extends Base
             $resourceName,
             false,
             $body
+        );
+        return $this->processRequest($body);
+    }
+
+    public function addIdentifier(Identifier $identifier, $id)
+    {
+        $identifierVars = get_object_vars($identifier);
+        $body = [];
+        foreach ($identifierVars as $key => $value) {
+            if ($value !== null) {
+                $body[$key] = $value;
+            }
+        }
+
+        $resourceName = $this->resourceName.'/'.$id.'/identifiers';
+        $body = json_encode($body, \JSON_THROW_ON_ERROR);
+
+        [, , $body] = $this->httpClient->performHttpRequest(
+            Common\HttpClient::REQUEST_POST,
+            $resourceName,
+            false,
+            $body
+        );
+        return $this->processRequest($body);
+    }
+
+    public function deleteIdentifier($contactId, $id)
+    {
+        $resourceName = $this->resourceName.'/'.$contactId.'/identifiers/'.$id;
+
+        [, , $body] = $this->httpClient->performHttpRequest(
+            Common\HttpClient::REQUEST_DELETE,
+            $resourceName
         );
         return $this->processRequest($body);
     }

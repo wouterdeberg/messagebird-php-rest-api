@@ -16,6 +16,7 @@ class Client
     public const VOICEAPI_ENDPOINT = 'https://voice.messagebird.com';
     public const PARTNER_ACCOUNT_ENDPOINT = 'https://partner-accounts.messagebird.com';
     public const NUMBERSAPI_ENDPOINT = 'https://numbers.messagebird.com/v1';
+    public const CONTACTS_ENDPOINT = 'https://contacts.messagebird.com/v2';
 
     public const ENABLE_CONVERSATIONSAPI_WHATSAPP_SANDBOX = 'ENABLE_CONVERSATIONSAPI_WHATSAPP_SANDBOX';
     public const CONVERSATIONSAPI_WHATSAPP_SANDBOX_ENDPOINT = 'https://whatsapp-sandbox.messagebird.com/v1';
@@ -147,6 +148,11 @@ class Client
      */
     protected $numbersAPIClient;
 
+    /**
+     * @var HttpClient
+     */
+    protected $contactsAPIClient;
+
     public function __construct(?string $accessKey = null, Common\HttpClient $httpClient = null, array $config = [])
     {
         if ($httpClient === null) {
@@ -163,12 +169,14 @@ class Client
             ]);
             $this->partnerAccountClient = new Common\HttpClient(self::PARTNER_ACCOUNT_ENDPOINT);
             $this->numbersAPIClient = new Common\HttpClient(self::NUMBERSAPI_ENDPOINT);
+            $this->contactsAPIClient = new Common\HttpClient(self::CONTACTS_ENDPOINT);
         } else {
             $this->conversationsAPIHttpClient = $httpClient;
             $this->httpClient = $httpClient;
             $this->voiceAPIHttpClient = $httpClient;
             $this->partnerAccountClient = $httpClient;
             $this->numbersAPIClient = $httpClient;
+            $this->contactsAPIClient = $httpClient;
         }
 
         $this->httpClient->addUserAgentString('MessageBird/ApiClient/' . self::CLIENT_VERSION);
@@ -185,6 +193,9 @@ class Client
 
         $this->numbersAPIClient->addUserAgentString('MessageBird/ApiClient/' . self::CLIENT_VERSION);
         $this->numbersAPIClient->addUserAgentString($this->getPhpVersion());
+
+        $this->contactsAPIClient->addUserAgentString('MessageBird/ApiClient/' . self::CLIENT_VERSION);
+        $this->contactsAPIClient->addUserAgentString($this->getPhpVersion());
 
         if ($accessKey !== null) {
             $this->setAccessKey($accessKey);
@@ -205,7 +216,7 @@ class Client
         $this->voiceTranscriptions = new Resources\Voice\Transcriptions($this->voiceAPIHttpClient);
         $this->voiceWebhooks = new Resources\Voice\Webhooks($this->voiceAPIHttpClient);
         $this->mmsMessages = new Resources\MmsMessages($this->httpClient);
-        $this->contacts = new Resources\Contacts($this->httpClient);
+        $this->contacts = new Resources\Contacts($this->contactsAPIClient);
         $this->groups = new Resources\Groups($this->httpClient);
         $this->conversations = new Resources\Conversation\Conversations($this->conversationsAPIHttpClient);
         $this->conversationMessages = new Resources\Conversation\Messages($this->conversationsAPIHttpClient);
@@ -238,5 +249,6 @@ class Client
         $this->voiceAPIHttpClient->setAuthentication($authentication);
         $this->partnerAccountClient->setAuthentication($authentication);
         $this->numbersAPIClient->setAuthentication($authentication);
+        $this->contactsAPIClient->setAuthentication($authentication);
     }
 }
