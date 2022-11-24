@@ -120,13 +120,6 @@ class MessageResponse extends Base
     public $createdDatetime;
 
     /**
-     * An array of recipients
-     *
-     * @var Recipients
-     */
-    public $recipients;
-
-    /**
      * @deprecated 2.2.0 No longer used by internal code, please switch to {@see self::loadFromStdclass()}
      * 
      * @param mixed $object
@@ -135,7 +128,6 @@ class MessageResponse extends Base
     {
         parent::loadFromArray($object);
 
-        $this->recipients = (new Recipients())->loadFromArray($this->recipients);
         $this->typeDetails = get_object_vars($this->typeDetails);
 
         return $this;
@@ -145,7 +137,6 @@ class MessageResponse extends Base
     {
         parent::loadFromStdclass($object);
 
-        $this->recipients = (new Recipients())->loadFromStdclass($this->recipients);
         $this->typeDetails = get_object_vars($this->typeDetails);
 
         return $this;

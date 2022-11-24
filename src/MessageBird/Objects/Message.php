@@ -104,12 +104,6 @@ class Message extends Base
      */
     public $scheduledDatetime;
     /**
-     * An array of recipients
-     *
-     * @var array
-     */
-    public $recipients = [];
-    /**
      * The URL to send status delivery reports for the message to
      *
      * @var string
@@ -163,15 +157,6 @@ class Message extends Base
     {
         parent::loadFromArray($object);
 
-        if (!empty($this->recipients->items)) {
-            foreach ($this->recipients->items as &$item) {
-                $recipient = new Recipient();
-                $recipient->loadFromArray($item);
-
-                $item = $recipient;
-            }
-        }
-
         return $this;
     }
 
@@ -182,15 +167,6 @@ class Message extends Base
     public function loadFromStdclass(stdClass $object): self
     {
         parent::loadFromStdclass($object);
-
-        if (!empty($this->recipients->items)) {
-            foreach ($this->recipients->items as &$item) {
-                $recipient = new Recipient();
-                $recipient->loadFromStdclass($item);
-
-                $item = $recipient;
-            }
-        }
 
         return $this;
     }
