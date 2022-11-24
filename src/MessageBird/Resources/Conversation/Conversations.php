@@ -84,6 +84,34 @@ class Conversations extends Base
         return $this->processRequest($body);
     }
 
+    public function getConversationsByContact(string $contactId, array $parameters = [])
+    {
+        [, , $body] = $this->httpClient->performHttpRequest(
+            HttpClient::REQUEST_GET,
+            $this->resourceName.'/contact/'.$contactId,
+            $parameters
+        );
+
+        if ($body === null) {
+            throw new Exceptions\ServerException('Got an invalid JSON response from the server.');
+        }
+
+        try {
+            $body = json_decode($body, null, 512, \JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new Exceptions\ServerException('Got an invalid JSON response from the server.');
+        }
+
+        if (!empty($body->errors)) {
+            $responseError = new Common\ResponseError($body);
+            throw new Exceptions\RequestException($responseError->getErrorString());
+        }
+
+        if ($body->items) {
+            return $body;
+        }
+    }
+
     /**
      * @param mixed $object
      * @param mixed $id
