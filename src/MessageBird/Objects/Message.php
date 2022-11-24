@@ -76,14 +76,6 @@ class Message extends Base
     public $gateway;
 
     /**
-     * An associative array with extra information. Is only used when a binary or premium
-     * message is sent.
-     *
-     * @var array
-     */
-    public $typeDetails = [];
-
-    /**
      * The datacoding used, can be plain or unicode
      *
      * @var string
@@ -121,7 +113,6 @@ class Message extends Base
      */
     public function setBinarySms($header, $body): void
     {
-        $this->typeDetails['udh'] = $header;
         $this->body = $body;
         $this->type = self::TYPE_BINARY;
     }

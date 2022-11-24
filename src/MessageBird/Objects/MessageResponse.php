@@ -85,14 +85,6 @@ class MessageResponse extends Base
     public $gateway;
 
     /**
-     * An associative array with extra information. Is only used when a binary or premium
-     * message is sent.
-     *
-     * @var array
-     */
-    public $typeDetails = [];
-
-    /**
      * The datacoding used, can be plain or unicode
      *
      * @var string
@@ -128,16 +120,12 @@ class MessageResponse extends Base
     {
         parent::loadFromArray($object);
 
-        $this->typeDetails = get_object_vars($this->typeDetails);
-
         return $this;
     }
 
     public function loadFromStdclass(stdClass $object): self
     {
         parent::loadFromStdclass($object);
-
-        $this->typeDetails = get_object_vars($this->typeDetails);
 
         return $this;
     }
