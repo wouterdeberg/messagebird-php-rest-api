@@ -201,7 +201,7 @@ class Client
             $this->setAccessKey($accessKey);
         }
 
-        $this->messages = new Resources\Messages($this->httpClient);
+        $this->messages = new Resources\Messages($this->conversationsAPIHttpClient);
         $this->hlr = new Resources\Hlr($this->httpClient);
         $this->verify = new Resources\Verify($this->httpClient);
         $this->balance = new Resources\Balance($this->httpClient);
