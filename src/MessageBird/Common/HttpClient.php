@@ -2,9 +2,12 @@
 
 namespace MessageBird\Common;
 
+use Exception;
+use GuzzleHttp\Client;
 use InvalidArgumentException;
 use MessageBird\Common;
 use MessageBird\Exceptions;
+use MessageBird\Objects\File;
 
 /**
  * Class HttpClient
@@ -202,6 +205,28 @@ class HttpClient
         curl_close($curl);
 
         return [$responseStatus, $responseHeader, $responseBody];
+    }
+
+    public function performFileUploadRequest(File $fileData)
+    {
+        $uploadClient = new Client();
+
+        try {
+            $response = $uploadClient->post($this->getRequestUrl('files', null), [
+                'body' => file_get_contents($fileData->file->getPathname()),
+                'headers' => [
+                    'Authorization' => sprintf('AccessKey %s', $this->authentication->accessKey),
+                    'Content-Type' => $fileData->contentType,
+                    'Content-Disposition' => $fileData->contentDisposition,
+                ],
+            ]);
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+
+        $data = json_decode($response->getBody()->getContents());
+
+        return $data;
     }
 
     /**

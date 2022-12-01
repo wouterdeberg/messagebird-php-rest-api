@@ -17,6 +17,7 @@ class Client
     public const PARTNER_ACCOUNT_ENDPOINT = 'https://partner-accounts.messagebird.com';
     public const NUMBERSAPI_ENDPOINT = 'https://numbers.messagebird.com/v1';
     public const CONTACTS_ENDPOINT = 'https://contacts.messagebird.com/v2';
+    public const FILES_ENDPOINT = 'https://messaging.messagebird.com/v1';
 
     public const ENABLE_CONVERSATIONSAPI_WHATSAPP_SANDBOX = 'ENABLE_CONVERSATIONSAPI_WHATSAPP_SANDBOX';
     public const CONVERSATIONSAPI_WHATSAPP_SANDBOX_ENDPOINT = 'https://whatsapp-sandbox.messagebird.com/v1';
@@ -120,6 +121,10 @@ class Client
      */
     public $partnerAccounts;
     /**
+     * @var Resources\Files
+     */
+    public $files;
+    /**
      * @var string
      */
     protected $endpoint = self::ENDPOINT;
@@ -153,6 +158,11 @@ class Client
      */
     protected $contactsAPIClient;
 
+    /**
+     * @var HttpClient
+     */
+    protected $filesAPIClient;
+
     public function __construct(?string $accessKey = null, Common\HttpClient $httpClient = null, array $config = [])
     {
         if ($httpClient === null) {
@@ -170,6 +180,7 @@ class Client
             $this->partnerAccountClient = new Common\HttpClient(self::PARTNER_ACCOUNT_ENDPOINT);
             $this->numbersAPIClient = new Common\HttpClient(self::NUMBERSAPI_ENDPOINT);
             $this->contactsAPIClient = new Common\HttpClient(self::CONTACTS_ENDPOINT);
+            $this->filesAPIClient = new Common\HttpClient(self::FILES_ENDPOINT);
         } else {
             $this->conversationsAPIHttpClient = $httpClient;
             $this->httpClient = $httpClient;
@@ -177,6 +188,7 @@ class Client
             $this->partnerAccountClient = $httpClient;
             $this->numbersAPIClient = $httpClient;
             $this->contactsAPIClient = $httpClient;
+            $this->filesAPIClient = $httpClient;
         }
 
         $this->httpClient->addUserAgentString('MessageBird/ApiClient/' . self::CLIENT_VERSION);
@@ -196,6 +208,9 @@ class Client
 
         $this->contactsAPIClient->addUserAgentString('MessageBird/ApiClient/' . self::CLIENT_VERSION);
         $this->contactsAPIClient->addUserAgentString($this->getPhpVersion());
+
+        $this->filesAPIClient->addUserAgentString('MessageBird/ApiClient/'. self::CLIENT_VERSION);
+        $this->filesAPIClient->addUserAgentString($this->getPhpVersion());
 
         if ($accessKey !== null) {
             $this->setAccessKey($accessKey);
@@ -225,6 +240,7 @@ class Client
         $this->partnerAccounts = new Resources\PartnerAccount\Accounts($this->partnerAccountClient);
         $this->phoneNumbers = new Resources\PhoneNumbers($this->numbersAPIClient);
         $this->availablePhoneNumbers = new Resources\AvailablePhoneNumbers($this->numbersAPIClient);
+        $this->files = new Resources\Files($this->filesAPIClient);
     }
 
     private function getPhpVersion(): string
@@ -250,5 +266,6 @@ class Client
         $this->partnerAccountClient->setAuthentication($authentication);
         $this->numbersAPIClient->setAuthentication($authentication);
         $this->contactsAPIClient->setAuthentication($authentication);
+        $this->filesAPIClient->setAuthentication($authentication);
     }
 }
