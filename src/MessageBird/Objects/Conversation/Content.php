@@ -107,19 +107,35 @@ class Content extends Base implements JsonSerializable
     private function loadMediaIfNeeded(): void
     {
         if (!empty($this->audio->url)) {
-            $this->audio = ['url' => $this->audio->url, 'caption' => $this->audio->caption];
+            $this->audio = ['url' => $this->audio->url];
+
+            if (!empty($this->audio->caption)) {
+                $this->audio = ['url' => $this->audio->url, 'caption' => $this->audio->caption];
+            }
         }
 
         if (!empty($this->file->url)) {
-            $this->file = ['url' => $this->file->url, 'caption' => $this->file->caption];
+            $this->file = ['url' => $this->file->url];
+
+            if (!empty($this->file->caption)) {
+                $this->file = ['url' => $this->file->url, 'caption' => $this->file->caption];
+            }
         }
 
         if (!empty($this->image->url)) {
-            $this->image = ['url' => $this->image->url, 'caption' => $this->image->caption];
+            $this->image = ['url' => $this->image->url];
+
+            if (!empty($this->image->caption)) {
+                $this->image = ['url' => $this->image->url, 'caption' => $this->image->caption];
+            }
         }
 
         if (!empty($this->video->url)) {
-            $this->video = ['url' => $this->video->url, 'caption' => $this->video->caption];
+            $this->video = ['url' => $this->video->url];
+
+            if (!empty($this->video->caption)) {
+                $this->video = ['url' => $this->video->url, 'caption' => $this->video->caption];
+            }
         }
     }
 
