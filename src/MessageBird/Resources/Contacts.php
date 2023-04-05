@@ -2,6 +2,7 @@
 
 namespace MessageBird\Resources;
 
+use Exception;
 use InvalidArgumentException;
 use MessageBird\Common;
 use MessageBird\Common\HttpClient;
@@ -94,11 +95,16 @@ class Contacts extends Base
     {
         $resourceName = $this->resourceName.'/'.$contactId.'/identifiers/'.$id;
 
-        [, , $body] = $this->httpClient->performHttpRequest(
-            Common\HttpClient::REQUEST_DELETE,
-            $resourceName
-        );
-        return $this->processRequest($body);
+        try {
+            [, , $body] = $this->httpClient->performHttpRequest(
+                Common\HttpClient::REQUEST_DELETE,
+                $resourceName
+            );
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+
+        return true;
     }
 
     /**
