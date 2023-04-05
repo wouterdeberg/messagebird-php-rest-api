@@ -4,6 +4,7 @@ namespace MessageBird\Resources;
 
 use InvalidArgumentException;
 use MessageBird\Common;
+use MessageBird\Common\HttpClient;
 use MessageBird\Exceptions;
 use MessageBird\Objects;
 use MessageBird\Objects\Contact\Identifier;
@@ -133,5 +134,32 @@ class Contacts extends Base
         $this->object = new Objects\Group();
         $this->setResourceName($this->resourceName . '/' . $id . '/groups');
         return $this->getList($parameters);
+    }
+
+    public function mergeContacts($origin, $destination)
+    {
+        if ($origin === null) {
+            throw new InvalidArgumentException('No origin contact id provided.');
+        }
+
+        if ($destination === null) {
+            throw new InvalidArgumentException('No destination contact id provided.');
+        }
+
+        $this->setResourceName('/ops/'. $this->resourceName . '/merge');
+
+        $requestData = ['origin' => $origin, 'destination' => $destination];
+        $requestBody = json_encode($requestData, \JSON_THROW_ON_ERROR);
+
+        [, , $body] = $this->httpClient->performHttpRequest(
+            HttpClient::REQUEST_POST,
+            $this->resourceName,
+            null,
+            $requestBody
+        );
+
+        $data = json_decode($body);
+
+        return $this->object->loadFromStdclass($data);
     }
 }
